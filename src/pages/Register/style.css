@@ -1,0 +1,137 @@
+.text-create-account{
+  margin-bottom: 32px;
+}
+
+.text-create-account > p.text-register{
+  text-align: center;
+  font-weight: 700;
+  font-size: 32px;
+}
+
+p.text-alternative-create-account{
+  text-align: center;
+  font-weight: 600;
+  margin-top: -12px;
+  margin-bottom: 12px;
+}
+
+.form-container > button.signin-google{
+  margin-top: 0px;
+}
+
+section.modal-register-success{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  position: absolute;
+  right: 16px;
+  bottom: 16px;
+  width: 433px;
+  height: 56px;
+  background-color: var(--success-color);
+  font-family: 'Inter';
+  font-weight: 600;
+  font-size: 16px;
+  padding: 0 12px;
+  border-radius: 8px;
+}
+
+.container-left{
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  width: 220px;
+}
+
+.container-left > img.register-check-vetor{
+  width: 22px;
+  height: 22px;
+}
+
+
+button.btn-redirect-modal-register{
+  width: 121px;
+  height: 32px;
+  border-radius: 4px;
+  border: 1px solid #6ACE13;
+  background-color: transparent;
+  font-family: 'Inter';
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.modal-error{
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  padding: 0 12px;
+  border-radius: 8px;
+  background-color: var(--fail-color);
+}
+
+.modal-error > .container-text-modal-error, .container-text-modal-error-email, .container-text-modal-error-user{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  margin-right: 16px;
+  font-family: 'Inter';
+  font-size: 16px;
+}
+
+.modal-error > button.btn-close-modal-error{
+  width: 88px;
+  height: 32px;
+  align-self: center;
+  border-radius: 4px;
+  border: 1px solid #F1AA09;
+  background-color: transparent;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.modal-error > img.vetor-error-register{
+  width: 23px;
+  height: 20px;
+  align-self: center;
+  margin-right: 12px;
+}
+
+section.modal-register-error-password{
+  display: flex;
+  flex-direction: row;
+  width: 580px;
+  height: 84px;
+}
+
+.container-text-modal-error > h4{
+  font-weight: 600;
+}
+
+.container-text-modal-error > p{
+  font-weight: 400;
+  width: 400px;
+}
+
+.modal-register-error-email{
+  display: flex;
+  flex-direction: row;
+  width: 360px;
+  height: 62px;
+}
+
+.container-text-modal-error-email > p{
+  width: 180px;
+}
+
+.modal-register-error-user{
+  display: flex;
+  flex-direction: row;
+  width: 380px;
+  height: 60px;
+}
+
+.container-text-modal-error-user > p{
+  width: 200px;
+}

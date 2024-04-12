@@ -1,11 +1,11 @@
-//packages
+import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
+
 import auth from '../../firebaseConnection'
 import { GoogleAuthProvider, signInWithPopup, signInWithEmailAndPassword } from 'firebase/auth'
 
-//style
 import './style.css'
 
-//route
 import { Link } from "react-router-dom"
 
 //images
@@ -17,50 +17,111 @@ import iconCloseImg from '../../assets/images//icon-close.png'
 import vetorModalErrImg from '../../assets/images/vetor-modal-login-error.png'
 
 const Login = () => {
+  const navigate = useNavigate()
+  const [inputEmail, setInputEmail] = useState('')
+  const [inputPassword, setInputPaswword] = useState('')
+
+  const [showModalLoginError, setShowModalLoginError] = useState(false)
+  const [showModalLoginSuccess, setShowModalLoginSuccess] = useState(false)
+
+  const handleLogin = async () => {
+    if(inputEmail === '' || inputPassword === ''){
+      setShowModalLoginError(true)
+      setTimeout(() => {
+        setShowModalLoginError(false)
+      }, 2500)
+    } else {
+      await signInWithEmailAndPassword(auth, inputEmail, inputPassword)
+      .then((response) => {
+        const idUser = response.user.auth.lastNotifiedUid
+        localStorage.setItem("@id_user", idUser)
+        setShowModalLoginSuccess(true)
+        setTimeout(() => {
+          setShowModalLoginSuccess(false)
+          navigate('/lists')
+        }, 2500)
+      })
+      .catch((error) => {
+        console.log(error)
+        setShowModalLoginError(true)
+        setInputEmail('')
+        setInputPaswword('')
+        setTimeout(() => {
+          setShowModalLoginError(false)
+        }, 2500)
+
+      })
+    }
+  }
+
+  const loginGoogle = async () => {
+    const provider = await new GoogleAuthProvider()
+    signInWithPopup(auth, provider)
+    .then((response) => {
+      const idUser = response.user.auth.lastNotifiedUid
+      localStorage.setItem("@id_user", idUser)
+      navigate('/lists')
+    })
+  }
+
   return(
-    <main class="main-container-login">
-      <article class="aside-presentation">
-        <img src={clockImg} alt="clock" class="clock-img"/>
-        <section class="text-todo-presentation">
+    <main className="main-container-login">
+      <article className="aside-presentation">
+        <img src={clockImg} alt="clock" className="clock-img"/>
+        <section className="text-todo-presentation">
           <p>Everything you </p>
           <p>need to do in one</p>
           <p>place.</p>
         </section>
-        <img src={tasksImg} alt="tasks" class="tasks-img"/>
+        <img src={tasksImg} alt="tasks" className="tasks-img"/>
     </article>
-    <article class="form-main-container">
-      <section class="form-container">
-        <h1 class="text-login">Login</h1>
-        <input type="text" placeholder="Email Address" id="input-email"/>
-        <input type="password" placeholder="Password" id="input-password"/>
-        <button class="btn-login" id="btn-login">Login</button>
-        <p class="text-alternative-login-account">Or</p>
-        <button class="btn-login signin-google" id="signin-google">
+    <article className="form-main-container">
+      <section className="form-container">
+        <h1 className="text-login">Login</h1>
+        <input 
+          type="text" 
+          placeholder="Email Address" 
+          onChange={(e) => setInputEmail(e.target.value)}
+        />
+        <input 
+          type="password" 
+          placeholder="Password" 
+          onChange={(e) => setInputPaswword(e.target.value)}
+        />
+        <button className="btn-login" onClick={handleLogin}>Login</button>
+        <p className="text-alternative-login-account">Or</p>
+        <button className="btn-login signin-google" onClick={loginGoogle}>
           <img src={googleIcon} alt="icon-google"/>
           Login with Google
         </button>
-        <p class="text-no-account">Do not have an account yet?</p>
-        <Link to="register" class="text-no-account" id="text-no-account">Sign up</Link>
+        <p className="text-no-account">Do not have an account yet?</p>
+        <Link to="register" className="text-no-account">Sign up</Link>
       </section>
     </article>
-    <section class="modal-login-success" id="modal-login-success">
-      <div class="container-left">
-        <img src={vetorModalImg} alt="login-vetor" class="login-check-vetor"/>
-        <p>Login successfully</p>
-      </div>
-      <div class="container-right">
-        <button class="btn-redirect-modal-login">redirecting...</button>
-        <img src={iconCloseImg} alt="close-modal-icon" class="close-modal-login"/>
-      </div>
-    </section>
-    <section class="modal-login-error" id="modal-login-error">
-      <img src={vetorModalErrImg} alt="login-vetor-error"/>
-      <div class="container-text-modal-error">
-        <h4>Failed to login</h4>
-        <p>An error occurred, check if the password and/or email are correct</p>
-      </div>
-      <button class="btn-close-modal-error">Close</button>
-    </section>
+
+    {showModalLoginSuccess && (
+      <section className="modal-login-success">
+        <div className="container-left">
+          <img src={vetorModalImg} alt="login-vetor" className="login-check-vetor"/>
+          <p>Login successfully</p>
+        </div>
+        <div className="container-right">
+          <button className="btn-redirect-modal-login">redirecting...</button>
+          <img src={iconCloseImg} alt="close-modal-icon" className="close-modal-login"/>
+        </div>
+      </section>
+    )}
+
+    {showModalLoginError && (
+      <section className="modal-login-error">
+        <img src={vetorModalErrImg} alt="login-vetor-error"/>
+        <div className="container-text-modal-error">
+          <h4>Failed to login</h4>
+          <p>An error occurred, check if the password and/or email are correct</p>
+        </div>
+        <button className="btn-close-modal-error">Close</button>
+      </section>
+    )}
   </main>
   )
 }

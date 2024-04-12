@@ -114,7 +114,7 @@ h1.text-login{
 }
 
 section.modal-login-success{
-  display: none;
+  display: flex;
   flex-direction: row;
   align-items: center;
   justify-content: space-between;
@@ -166,7 +166,7 @@ section.modal-login-success{
 }
 
 section.modal-login-error{
-  display: none;
+  display: flex;
   flex-direction: row;
   width: 450px;
   height: 72px;
