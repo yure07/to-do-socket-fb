@@ -5,6 +5,8 @@ import { useEffect } from 'react'
 
 import { doc, addDoc, updateDoc, collection, getDocs } from 'firebase/firestore'
 
+import axios from 'axios'
+
 import { db } from '../../firebaseConnection'
 
 import userIcon from '../../assets/images/user-icon.png'
@@ -36,6 +38,8 @@ const Lists = () => {
   const [descriptionTask, setDescriptionTask] = useState('')
 
   const [currentList, setCurrentList] = useState()
+
+  const [emailToInvite, setEmailToInvite] = useState('')
 
   const id_user = localStorage.getItem('@id_user')
 
@@ -284,6 +288,15 @@ const Lists = () => {
     loadTasks(title_open_list, description_open_list, id_user)
   }
 
+  const sendMail = async () => {
+    await axios
+      .get('http://localhost:3001/lists', {
+        params: {recepter: emailToInvite}
+      })
+      .then(() => console.log('convite enviado com sucesso'))
+      .catch(() => console.log('deu erro!'))
+  }
+
   return(
     <main className="container-page-lists">
     <aside className="sidebar-container">
@@ -464,11 +477,17 @@ const Lists = () => {
         </header>
           <div className="container-inputs">
             <label>Email</label>
-            <input type="text" id="email-invite" placeholder="person@email.com"/>
+            <input 
+              type="text" 
+              placeholder="person@email.com"
+              onChange={(e) => setEmailToInvite(e.target.value)}
+            />
             <label>Nome</label>
             <input type="text" id="name-invite" placeholder="lorem ipsum"/>
           </div>
-          <button className="btn-add-new-people" id="btn-invite-people-inside">
+          <button 
+            className="btn-add-new-people" 
+            onClick={() => sendMail()}>
             <img src={addIcon} alt="add-icon-modal"/>
             Invite
           </button>
