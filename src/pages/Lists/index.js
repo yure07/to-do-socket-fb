@@ -29,7 +29,11 @@ const Lists = () => {
 
   const [titleList, setTitleList] = useState('')
   const [descriptionList, setDescriptionList] = useState('')
-  const [childrenOptions, setChildrenOptions] = useState()
+  const [progressTask, setProgressTask] = useState('To Do')
+  const [memberTask, setMemberTask] = useState('')
+
+  const [tileTask, setTitleTask] = useState('')
+  const [descriptionTask, setDescriptionTask] = useState('')
 
   const [currentList, setCurrentList] = useState()
 
@@ -52,12 +56,16 @@ const Lists = () => {
     list_task_user.map((list) => {
       const div_count_lists = document.createElement('div')
       div_count_lists.classList = 'count-lists'
-
+      
       const title_new_list = document.createElement('p')
       title_new_list.innerHTML = list.title
 
       const description_new_list = document.createElement('span')
       description_new_list.innerHTML = list.description
+
+      div_count_lists.onclick = () => {
+        applyStylesOnList(div_count_lists)
+      }
 
       div_count_lists.appendChild(title_new_list)
       div_count_lists.appendChild(description_new_list)
@@ -74,10 +82,27 @@ const Lists = () => {
       console.log(error)
     })
   }
+
+  const addNewTask = async () => {
+    if(tileTask === '' || descriptionTask === '') alert('Por favor preencha todos os campos!')
+    else {
+      try {
+        await addDoc(collection(db, `${currentList.title}, ${currentList.description}, ${id_user}`), {
+          title: tileTask,
+          progress: progressTask,
+          member: memberTask,
+          description: descriptionTask,
+          user_id: id_user
+        })
+        setModalAddTask(false)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+  }
   
   const addListOnScreen = () => {
     const list_container = document.getElementById("list-container")
-    setChildrenOptions(Array.from(list_container.children))
 
     const div_count_lists = document.createElement('div')
     div_count_lists.classList = 'count-lists'
@@ -106,9 +131,18 @@ const Lists = () => {
 
 
   const loadTasks = async (title, description, idUser) => {
+    const tasks_to_do = document.getElementById("tasks-to-do")
+    const tasks_doing = document.getElementById("tasks-doing")
+    const tasks_done = document.getElementById("tasks-done")
+    cleanTasksOnScreen(tasks_to_do)
+    cleanTasksOnScreen(tasks_doing)
+    cleanTasksOnScreen(tasks_done)
     const querySnapshot = await getDocs(collection(db, `${title}, ${description}, ${idUser}`));
     querySnapshot.forEach((doc) => {
-
+      /* console.log(title, description, idUser)
+      console.log(doc.id)
+      console.log(doc.data()) */
+      
       if(doc.data().user_id === id_user){
         const task = document.createElement('div')
         if(doc.data().progress === 'Doing'){
@@ -142,8 +176,67 @@ const Lists = () => {
         select_progress_task.onclick = () => {
           updateSelect(select_progress_task.value, doc.id, title, description, idUser)
         }
+
+        const options1 = ['To Do', 'Doing', 'Done']
+        const options2 = ['Doing', 'To Do', 'Done']
+        const options3 = ['Done', 'To Do', 'Doing']
+
+        let options
+        if(doc.data().progress === 'To Do') options = options1
+        else if(doc.data().progress === 'Doing') options = options2
+        else options = options3
+        options.forEach((optionText) => {
+          const option = document.createElement('option')
+          option.text = optionText
+          option.value = optionText
+          select_progress_task.add(option)
+        })
+        
+        const container_bottom_task = document.createElement('div')
+        container_bottom_task.classList = 'container-bottom-task'
+        
+        const description_task = document.createElement('p')
+        description_task.innerHTML = doc.data().description
+        
+        const div_member_task = document.createElement('div')
+        div_member_task.classList = 'member-task'
+
+        const img_profile_icon = document.createElement('img')
+        img_profile_icon.src = '../assets/profile-small-icon.png'
+        
+        const member_task = document.createElement('span')
+        member_task.innerHTML = doc.data().member
+        
+        div_member_task.appendChild(img_profile_icon)
+        div_member_task.appendChild(member_task)
+        container_bottom_task.appendChild(description_task)
+        container_bottom_task.appendChild(div_member_task)
+        div_title_task.appendChild(img_paper_icon)
+        div_title_task.appendChild(title_task_content)
+        container_top_task.appendChild(div_title_task)
+        container_top_task.appendChild(rocket_img_select)
+        container_top_task.appendChild(select_progress_task)
+        task.appendChild(container_top_task)
+        task.appendChild(container_bottom_task)
+
+        if(doc.data().progress === 'To Do'){
+          tasks_to_do.appendChild(task)
+        }
+        else if(doc.data().progress === 'Doing'){
+          tasks_doing.appendChild(task)
+        }
+        else{
+          tasks_done.appendChild(task)
+        }
+
       }
     })
+  }
+
+  const cleanTasksOnScreen = (divParent) => {
+    while (divParent.firstChild){
+      divParent.removeChild(divParent.firstChild)
+    }
   }
 
   const updateSelect = (value, idDoc, titleList, descriptionList, idUserList) => {
@@ -165,9 +258,13 @@ const Lists = () => {
   }
 
   const cleanStylesOnList = () => {
-    childrenOptions.forEach(element => {
-      element.style.backgroundColor = '#fff'
-      element.style.borderRight = 'none'
+    const list_container = document.getElementById("list-container")
+    const children = [...list_container.children]
+    children.forEach((list) => {
+      if(list.style.backgroundColor === 'rgba(128, 128, 128, 0.3)'){
+        list.style.backgroundColor = '#fff'
+        list.style.borderRight = 'none'
+      }
     })
   }
     
@@ -183,17 +280,9 @@ const Lists = () => {
       description: description_open_list,
       idUser: id_user
     })
-    titleList.innerHTML = currentList.title
+    setTitleList(title_open_list)
     loadTasks(title_open_list, description_open_list, id_user)
   }
-
-  const list_container = document.getElementById("list-container")
-  const children_list_container = Array.from(list_container.children)
-  childrenOptions && childrenOptions.slice(1).forEach((list) => {
-    list.addEventListener('click', () => {
-      applyStylesOnList(list)
-    })
-  })
 
   return(
     <main className="container-page-lists">
@@ -216,7 +305,7 @@ const Lists = () => {
     {dataTask && (
       <article className="data-tasks" id="data-tasks">
         <section className="header-list">
-          <h1 className="title-list" id="title-list"></h1>
+          <h1 className="title-list" id="title-list">{currentList ? currentList.title : 'Selecione uma Lista'}</h1>
           <div className="actions-header-list">
             <button className="btn-delete-list" onClick={() => setModalDelete(!modalDelete)}>
               <img src={deleteBtnIcon} alt="delete-button"/>
@@ -324,24 +413,36 @@ const Lists = () => {
         </header>
         <div className="container-inputs">
           <label>Title</label>
-          <input type="text" placeholder="Make the dinner" id="title-task"/>
+          <input 
+            type="text" 
+            placeholder="Make the dinner" 
+            onChange={(e) => setTitleTask(e.target.value)}
+          />
           <label>Progress</label>
-          <select name="progress" id="progress-task">
+          <select 
+            name="progress" 
+            id="progress-task" 
+            onChange={(e) => setProgressTask(e.target.value)}>
             <option value="To Do">To Do</option>
             <option value="Doing">Doing</option>
             <option value="Done">Done</option>
           </select>
           <label>Member</label>
-          <select name="progress" id="member-task">
-            <option value="Yure">Yure</option>
-            <option value="Joao">Joao</option>
-            <option value="Lucas">Lucas</option>
-            <option value="Emma">Emma</option>
-          </select>
+          <input
+            type='text'
+            placeholder='Member'
+            onChange={(e) => setMemberTask(e.target.value)}
+          />
           <label>Description</label>
-          <input type="text" placeholder="Buy mass and tomato in the market" id="description-task"/>
+          <input 
+            type="text" 
+            placeholder="Buy mass and tomato in the market" 
+            onChange={(e) => setDescriptionTask(e.target.value)}
+          />
         </div>
-        <button id="add-new-task" className="btn-add-task">
+        <button 
+          className="btn-add-task"
+          onClick={() => addNewTask()}>
           <img src={checkIcon} alt="check-icon-modal"/>
           Save
         </button>
