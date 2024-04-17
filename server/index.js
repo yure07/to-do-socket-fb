@@ -8,19 +8,19 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
 
-function sendMail(recepter){
+const sendMail = async (recepter) => {
   const transporter = nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 587,
     secure: false,
     auth:{
-      user: 'rafaelyure53@gmail.com',
-      pass: 'egjf vuqy bilv ypli'
+      user: 'noreplytodosock@gmail.com',
+      pass: 'ezjx fpjz exyd ojlf'
     }
   })
   
   transporter.sendMail({
-    from: 'rafaelyure53@gmail.com',
+    from: 'noreplytodosock@gmail.com',
     to: recepter,
     subject: 'Convite para To Do List',
     html: 'Aceite esse convite para participar da minha lista!'
@@ -39,7 +39,6 @@ app.listen('3001', () => {
 
 app.get('/lists', (req, res) => {
   console.log(req.query)
-  console.log(req.body)
   const { recepter } = req.query
   console.log(recepter)
   if (!recepter) {
